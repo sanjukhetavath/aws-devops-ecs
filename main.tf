@@ -29,7 +29,7 @@ resource "aws_ecs_service" "mongo" {
   task_definition = aws_ecs_task_definition.service.mongo.arn
   desired_count   = 3
   iam_role        = aws_iam_role.test_role.arn
-  depends_on      = [aws_iam_role_policy.tes_role]
+  depends_on      = [aws_iam_role_policy.test_role]
 
   ordered_placement_strategy {
     type  = "binpack"
