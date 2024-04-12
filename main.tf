@@ -1,4 +1,4 @@
-
+# defining ecs cluster code 
 resource "aws_kms_key" "example" {
   description             = "devopskey"
   deletion_window_in_days = 7
@@ -22,6 +22,9 @@ resource "aws_ecs_cluster" "test" {
     }
   }
 }
+
+
+# defining ecs service
 
 resource "aws_ecs_service" "mongo" {
   name            = "mongodb"
@@ -47,6 +50,8 @@ resource "aws_ecs_service" "mongo" {
     expression = "attribute:ecs.availability-zone in [us-west-2a, us-west-2b]"
   }
 }
+
+#defining ecs task defenation
 
 resource "aws_ecs_task_definition" "service" {
   family = "service"
@@ -88,4 +93,51 @@ resource "aws_ecs_task_definition" "service" {
     type       = "memberOf"
     expression = "attribute:ecs.availability-zone in [us-west-2a, us-west-2b]"
   }
+}
+
+# defining iam role
+
+resource "aws_iam_role" "ecs_role" {
+  name = "ecs-service-role"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ecs.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  tags = {
+    tag-key = "tag-value"
+  }
+}
+
+#defining iam policy
+resource "aws_iam_role_policy" "test_role" {
+  name = "ecs-service-policy"
+  role = aws_iam_role.ecs_role.id
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 }
