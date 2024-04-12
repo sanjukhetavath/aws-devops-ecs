@@ -31,8 +31,8 @@ resource "aws_ecs_service" "mongo" {
   cluster         = aws_ecs_cluster.test.id
   task_definition = aws_ecs_task_definition.service.mongo.arn
   desired_count   = 3
-  iam_role        = aws_iam_role.test_role.arn
-  depends_on      = [aws_iam_role_policy.test_role]
+  iam_role        = aws_iam_role.ecs_role
+  depends_on      = [aws_iam_role_policy.ecs_role]
 
   ordered_placement_strategy {
     type  = "binpack"
@@ -40,7 +40,7 @@ resource "aws_ecs_service" "mongo" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.test_role.arn
+    target_group_arn = aws_lb_target_group.ecs_role.arn
     container_name   = "mongo"
     container_port   = 8080
   }
