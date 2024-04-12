@@ -1,6 +1,10 @@
 
+resource "aws_kms_key" "example" {
+  description             = "devopskey"
+  deletion_window_in_days = 7
+}
 resource "aws_cloudwatch_log_group" "example" {
-  name = "example"
+  name = "edevopswatch"
 }
 
 resource "aws_ecs_cluster" "test" {
@@ -21,7 +25,7 @@ resource "aws_ecs_cluster" "test" {
 
 resource "aws_ecs_service" "mongo" {
   name            = "mongodb"
-  cluster         = aws_ecs_cluster.foo.id
+  cluster         = aws_ecs_cluster.test.id
   task_definition = aws_ecs_task_definition.mongo.arn
   desired_count   = 3
   iam_role        = aws_iam_role.foo.arn
